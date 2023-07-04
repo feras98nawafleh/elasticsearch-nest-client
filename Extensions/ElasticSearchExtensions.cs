@@ -21,7 +21,7 @@ public static class ElasticSearchExtensions
 
     private static void AddDefaultMappings(ConnectionSettings settings)
     {
-        settings.DefaultMappingFor<Product>(p => p.Ignore(x => x.Price).Ignore(x => x.id).Ignore(x => x.Quantity));
+        settings.DefaultMappingFor<Product>(p => p.Ignore(x => x.Quantity));
     }
     private static void CreateIndex(IElasticClient client, String indexName = "intalio")
     {

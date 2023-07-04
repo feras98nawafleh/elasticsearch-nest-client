@@ -31,4 +31,24 @@ public class ProductsController : ControllerBase
         await _elasticCLient.IndexDocumentAsync(product);
         return Ok(product);
     }
+    [HttpPut(Name = "FilterProducts")]
+    public async Task<IActionResult> Filter([FromBody] FilterCriteria filterCriteria, [FromQuery] String keyword)
+    {
+        var result = await _elasticCLient.SearchAsync<Product>(p => p
+        .Query(q => q
+            .Bool(b => b
+                .Must(
+                    m => m.Range(r => r.Field(f => f.Price).GreaterThan(filterCriteria.MinPrice)) ||
+                    m.Range(r => r.Field(f => f.Price).LessThan(filterCriteria.MaxPrice))
+                )
+            )
+        ).Size(1000));
+        return Ok(result.Documents.ToList());
+    }
+
+    public class FilterCriteria
+    {
+        public int? MinPrice { get; set; }
+        public int? MaxPrice { get; set; }
+    }
 }
